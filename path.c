@@ -63,42 +63,54 @@ int path_ls(char *cmd, char **av)
 	return (status);
 }
 
+/**
+* findCommandInPath -
+* @command:
+* Return:
+*/
+
 char *findCommandInPath(const char* command)
 {
-	char *pathCopy, *directory;
-    char* path = getenv("PATH");
-    if (path == NULL) {
-        printf("Error: PATH environment variable not found.\n");
-        return NULL;
-    }
+	char *pathCopy, *directory, *path = getenv("PATH");
 
-    pathCopy = _strdup(path);
-    if (pathCopy == NULL) {
-        printf("Error: Memory allocation failed.\n");
-        return NULL;
-    }
+	if (path == NULL)
+	{
+		printf("Error: PATH environment variable not found.\n");
+		return (NULL);
+	}
 
-    directory = _strtok(pathCopy, ":");
-    while (directory != NULL) {
-        int commandLen = _strlen(directory) + _strlen(command) + 2;
-        char* fullCommandPath = (char*)malloc(commandLen * sizeof(char));
-        if (fullCommandPath == NULL) {
-            _printf("Error: Memory allocation failed.\n");
-            free(pathCopy);
-            return NULL;
-        }
+	pathCopy = _strdup(path);
+	if (pathCopy == NULL)
+	{
+		_printf("Error: Memory allocation failed.\n");
+		return (NULL);
+	}
 
-        snprintf(fullCommandPath, commandLen, "%s/%s", directory, command);
+	directory = _strtok(pathCopy, ":");
+	while (directory != NULL)
+	{
+		int commandLen = _strlen(directory) + _strlen(command) + 2;
+		char* fullCommandPath = (char*)malloc(commandLen * sizeof(char));
 
-        if (access(fullCommandPath, F_OK) == 0) {
-            free(pathCopy);
-            return fullCommandPath;
-        }
+		if (fullCommandPath == NULL)
+		{
+			_printf("Error: Memory allocation failed.\n");
+			free(pathCopy);
+			return (NULL);
+		}
 
-        free(fullCommandPath);
-        directory = _strtok(NULL, ":");
-    }
+		snprintf(fullCommandPath, commandLen, "%s/%s", directory, command);
 
-    free(pathCopy);
-    return NULL;
+		if (access(fullCommandPath, F_OK) == 0)
+		{
+			free(pathCopy);
+			return (fullCommandPath);
+		}
+
+		free(fullCommandPath);
+		directory = _strtok(NULL, ":");
+	}
+
+	free(pathCopy);
+	return (NULL);
 }
