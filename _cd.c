@@ -44,24 +44,26 @@ char *_strndup(const char *str, size_t n)
  * Return: path to destination dir
  */
 
-void _cd(int argc, char *argv[])
+void _cd(char *cmd)
 {
-	char *home_dir = getenv("HOME"), *old_pwd = NULL, *new_pwd = NULL;
+	char *home_dir = _getenv("HOME"), *old_pwd = _getenv("OLDPWD"), *new_pwd = NULL;
+	char **argv = malloc(sizeof(char *) * SIZE);
 
-	if (argc == 1)
+	argv = tok(cmd);
+
+	if ( _strncmp(argv[1], "~", 1) == 0)
 	{
-		/* If no argument is given, change to the HOME directory*/
+		/* If no argument// arg = ~ is given, change to the HOME directory*/
 		if (chdir(home_dir) != 0)
 			perror("cd");
 	}
-	else if (argc == 2)
+	else
 	{
 		char *arg = argv[1];
 
-		if (strcmp(arg, "-") == 0)
+		if (_strncmp(arg, "-", 1) == 0)
 		{
 			/* If argument is '-', change to the previous directory*/
-			old_pwd = getenv("OLDPWD");
 			if (old_pwd == NULL)
 				_printf("cd: OLDPWD not set\n");
 			else
@@ -70,22 +72,20 @@ void _cd(int argc, char *argv[])
 					perror("cd");
 			}
 		}
-		else
+		if(is_directory(arg))
 		{
-			/* Change to the specified directory*/
 			if (chdir(arg) != 0)
-				perror("cd");
+				perror("No such file or directory");
 		}
 	}
-	else
-		printf("cd: Too many arguments\n");
 
 	/* Update the PWD and OLDPWD environment variables*/
 	new_pwd = getcwd(NULL, 0);
 	if (new_pwd != NULL)
-		setenv("OLDPWD", getenv("PWD"), 1), setenv("PWD", new_pwd, 1), free(new_pwd);
+		setenv("OLDPWD", _getenv("PWD"), 1), setenv("PWD", new_pwd, 1), free(new_pwd);
 	else
 		perror("cd");
+	free(argv);
 }
 
 /**

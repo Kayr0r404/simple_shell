@@ -41,20 +41,26 @@ int exec(char **argument, char **argv)
 int executeCmd(char *cmd)
 {
 	int status = 0;
-	char **argv2 = NULL, *token = NULL, *cmd2 = NULL, *path;
-	char *tmpCmd = extractCommandFromPath(cmd);
-_printf("comand: %s\n", cmd);
+	char **argv2 = NULL, *cmd2 = NULL, *path;
+	char *tmpCmd = extractCommandFromPath(_strdup(cmd));
+
 	if (isAbsolutePath(cmd))
 		cmd = extractCommandFromPath(cmd);
 
 	cmd2 = malloc(sizeof(char *) * SIZE);
-
-	path = findCommandInPath(_strtok(cmd, " "));
-	_printf("path:  %s, comand: %s\n", path, tmpCmd);
-	if (!path)
+	if (_strncmp(cmd, "cd", 2) == 0)
 	{
-		_printf("%s: command not found\n", cmd);
-		return (-1);
+			_cd(cmd);
+		return (0);
+	}
+	else
+	{
+		path = findCommandInPath(_strtok(cmd, " "));
+		if (!path)
+		{
+			_printf("%s: command not found\n", cmd);
+			return (-1);
+		}
 	}
 	cmd2 = _strcat(path, tmpCmd);
 
@@ -62,8 +68,6 @@ _printf("comand: %s\n", cmd);
 	argv2  = tok(cmd2);
 	status = exec(argv2, NULL);
 	free(cmd2), free(argv2);
-	(void)token;
-	(void)tmpCmd;
 
 	return (status);
 }

@@ -70,30 +70,30 @@ int path_ls(char *cmd)
 
 char *findCommandInPath(const char *command)
 {
-	char *path = getenv("PATH"), *directory, *pathCopy;
+	char *path = _getenv("PATH"), *directory, *pathCopy;
 
 	if (path == NULL)
 	{
-		printf("Error: PATH environment variable not found.\n");
+		_printf("Error: PATH environment variable not found.\n");
 		return (NULL);
 	}
 
-	pathCopy = strdup(path);
+	pathCopy = _strdup(path);
 	if (pathCopy == NULL)
 	{
-		printf("Error: Memory allocation failed.\n");
+		_printf("Error: Memory allocation failed.\n");
 		return (NULL);
 	}
 
-	directory = strtok(pathCopy, ":");
+	directory = _strtok(pathCopy, ":");
 	while (directory != NULL)
 	{
-		int commandLen = strlen(directory) + strlen(command) + 2;
+		int commandLen = _strlen(directory) + _strlen(command) + 2;
 		char *fullCommandPath = (char *)malloc(commandLen * sizeof(char));
 
 		if (fullCommandPath == NULL)
 		{
-			printf("Error: Memory allocation failed.\n");
+			_printf("Error: Memory allocation failed.\n");
 			free(pathCopy);
 			return (NULL);
 		}
@@ -101,10 +101,10 @@ char *findCommandInPath(const char *command)
 		snprintf(fullCommandPath, commandLen, "%s/%s", directory, command);
 
 		if (access(fullCommandPath, F_OK) == 0)
-			return (_strdup(strcat(directory, "/")));
+			return (_strdup(_strcat(directory, "/")));
 
 		free(fullCommandPath);
-		directory = strtok(NULL, ":");
+		directory = _strtok(NULL, ":");
 	}
 
 	free(pathCopy);
@@ -138,10 +138,10 @@ char *extractCommandFromPath(const char *fullPath)
 	if (!command)
 	{
 		/* No '/' found in the path, return a copy of the fullPath*/
-		return (strdup(fullPath));
+		return (_strdup(fullPath));
 	}
 
 	/* Increment the pointer to skip the '/'*/
 	/* Allocate memory for the command name*/
-	return (strdup(++command));
+	return (_strdup(++command));
 }

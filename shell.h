@@ -99,4 +99,5 @@ bool isAbsolutePath(const char *cmd);
 char *extractCommandFromPath(const char *fullPath);
 char **tok(char *str);
 
+void _cd(char *cmd);
 #endif
